@@ -1,15 +1,21 @@
+version: '3.8'
+
 services:
-  - type: web
-    name: n8n-selfhosted
-    env: docker
-    plan: starter # Khuyên dùng gói trả phí nhỏ để không bị ngủ đông, hoặc free tùy nhu cầu
-    region: oregon # Chọn vùng gần bạn nhất
-    disk:
-      name: n8n-data
-      mountPath: /home/node/.n8n
-      sizeGB: 1
-    envVars:
-      - key: WEBHOOK_URL
-        sync: false
-      - key: N8N_ENCRYPTION_KEY
-        generateValue: true
+  n8n:
+    image: n8nio/n8n:1.45.0  # Bạn có thể thay đổi số phiên bản ở đây
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_WEBHOOK_URL=http://localhost:5678/
+      - DB_TYPE=sqlite
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
